@@ -1,0 +1,197 @@
+import { useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const feedbackLikes = [
+  "Very clean and peaceful.",
+  "The staff was very kind and welcoming.",
+  "Comfortable lounge and great service.",
+  "Loved the food and quiet atmosphere.",
+  "Staff was professional and helpful.",
+  "Everything was well organized.",
+  "Good variety of food and drinks.",
+  "Polite and respectful service all around.",
+  "Would definitely come again.",
+  "Top service and great atmosphere.",
+  "The staff helped me with everything I needed.",
+  "Everything was spotless and fresh.",
+  "Nice atmosphere, very cozy and calm.",
+  "I felt relaxed the whole time I was there.",
+  "Comfortable seating and quiet space.",
+  "Great service, they helped me right away.",
+  "They treated me with great care and kindness.",
+  "The chairs were very comfortable.",
+  "Very neat and well-maintained place.",
+  "The toilets and seating areas were super clean.",
+  "Clean and organized space, felt safe and relaxed.",
+  "The staff answered my questions clearly and patiently.",
+  "Everything was perfect!",
+  "Super friendly and helpful staff.",
+  "I felt very welcome and comfortable.",
+  "Staff was kind and always smiling.",
+  "Fast and friendly service.",
+  "Great place to relax before my flight.",
+  "Felt calm and rested here.",
+  "Thank you for the warm service.",
+  "The lounge was very quiet and clean.",
+  "Simple but great food and drinks.",
+  "Always someone ready to help.",
+  "A lovely quiet spot to wait for boarding.",
+  "So clean and peaceful.",
+  "Everyone was so helpful and nice.",
+  "I liked the calm vibe here.",
+  "They made me feel at home.",
+  "Good coffee and comfy seats.",
+  "Everything went smooth and easy.",
+  "Very kind staff, thank you!",
+  "No stress, just peace.",
+  "I enjoyed my short time here a lot.",
+  "They were attentive and polite.",
+  "Great snacks and clean space.",
+  "Such a nice place to wait.",
+  "The lounge was calm and relaxing.",
+  "I felt safe and welcomed.",
+  "The team was great with support.",
+  "A perfect little break before flying.",
+  "The check-in staff was very friendly and welcoming.",
+  "I was greeted with a big smile at the lounge check-in.",
+  "Quick and smooth check-in. Thank you!",
+  "The staff at the front desk made me feel special.",
+  "Great first impression from the check-in team.",
+  "The check-in was fast and easy. Very helpful staff.",
+  "Very polite and kind check-in service.",
+  "The front staff explained everything clearly.",
+  "Check-in was simple and stress-free.",
+  "I felt very welcome right from the entrance.",
+  "The lady at the check-in counter was so nice.",
+  "They handled the check-in with care and respect.",
+  "Super professional and kind check-in team.",
+  "The front desk staff made everything easy for me.",
+  "Warm welcome and helpful at check-in.",
+  "Fast, friendly, and professional service at the front.",
+  "The person at the entrance was really kind.",
+  "Great service at the check-in area.",
+  "Very smooth process at the front desk.",
+  "I really liked the way I was welcomed."
+];
+
+const feedbackNoImprove = [
+  "Nothing needs improvement. Everything was great.",
+  "All good. No issues at all.",
+  "Everything was fine. Nothing to change.",
+  "No suggestions. I was very satisfied.",
+  "Everything went well. Keep it up.",
+  "No problems found. Great job.",
+  "Everything is already excellent.",
+  "No changes needed.",
+  "All good. Keep it going!",
+  "Great service. Nothing to fix.",
+  "Everything worked perfectly.",
+  "No complaints. Everything was spot on.",
+  "Everything was just right.",
+  "Very satisfied. No changes needed.",
+  "Smooth and easy. No improvement needed.",
+  "Everything felt perfect to me.",
+  "It was all great.",
+  "Perfect as is.",
+  "Everything was handled well.",
+  "Excellent from start to finish."
+];
+
+const flightCodes = [
+  "TG259", "TG2", "NH806", "TG7015", "TG5645", "TG5902", "FD4212", "TG550", "TG586", "TG323",
+  "TG241", "PG903", "TG7084", "TG676", "TG560", "JL708", "PG271", "TG461", "FD4104", "TVJ200",
+  "9C6194", "TVJ720", "QR839", "AI2333", "TVJ350", "TG205", "TG431", "NH848", "TG301", "TG624",
+  "FD4400", "TVJ982", "PG151", "FD4112", "CX654", "T5648", "BR76", "AI2356", "TVJ306", "TVJ352",
+  "8M334", "JD620", "TVJ108", "VN614", "TG303", "TVJ352", "UQ2642", "6E1054", "TG317", "TG318",
+  "TG319", "TG320", "TG321", "PG152", "PG153", "PG154", "PG155", "TG322", "TG323", "TG324",
+  "TG325"
+];
+
+const names = ["Laura Winn", "Juishan Chen", "Chunhsun Chen", "Nithi Boonlayanggoon", "Polpa Boonlayanggoon", 
+"Peiyun Lin", "Yunghung Chen", "Apiny Boonlayanggoon", "Yahanms Huang", "Myonghan You", 
+"Jaemin Lee", "Yeonkyeong Cho", "Yejin Kim", "Soobin Cho", "Jeongyeol Oh", 
+"Junhaeng Kim", "Dahee Jeong", "Abdulaziz S Aldwai", "Abdullah S Alddaway", "Apinya Simmathong", 
+"Jeonghyeon Jeon", "Junsoo Han", "Jin Hur", "Sungho Hong", "Rawipron Tongin", 
+"Eunha Cho", "Shinbi Hong", "Luisalb Ramosbarreiro", "Petrmr Konnikov", "Weinan Wu", 
+"Libin Zhou", "Simone Montori", "Mirko Peruzzi", "Wiam S Alddaway", "Hisham S Alddaway", 
+"Abdulmajeed Alddaway", "Ibtisam A Bin Mousa", "Kim Sarmiento", "Kittim Nuangchamnong", "Niwat Suwan", 
+"Kongphai Khonsri", "Pei Yun Pu", "Yen Chen Peng", "Roman Plotnikov", "Aungmyin Thu", 
+"Fengxu Tian", "Lin Huiyan", "S Watanaboonyongchar", "Rifeng Zhou", "Sandhya Dahal", 
+"Simank Vatsa Dahal", "Prisha Dahal", "Prabina Dahal", "Prabuddhda Dahal", "Aditi Pant", 
+"Khoonhui Yeo", "Thawatc Sangwienwong", "Raoul Wilmans", "Long Yang", "Sujan Kumar Bk", 
+"Kyinaing Htet", "Monmon Thu", "Rintuparamang Mathew", "Jonahjeremiah Mathew", "Warisa Hongsawasdi", 
+"Riyaz Khan", "Pradeep K Kochuveedu", "Yaching Chang", "Menghuan Chuang", "Supattra Roberts", 
+"Trystan Davi Roberts", "Mohammad Alazemi", "Danah Alazemi", "Rintaro Inagaki", "Prapatsa Lertchanvit", 
+"Papawari Lertchanvit", "Kritthee Leehasunon", "Siriwimon Ngiam", "Pitch Tanapaisalkit", "Hrishikesh Dha Joshi", 
+"Sanghoon Ko", "Anutr Ratipann", "Kiyosada Takeuchi", "Cherd Chirawatpongsa", "Surapun Potinamthong", 
+"Ku Tinnakornsrisupap", "Po Tinnakornsrisupap", "Steven Bruce", "Chaiyo Chomrak", "Ratchanee Teepprasan", 
+"Suwannee Teepprasan", "Ruyuf Alzahrani", "Khin Maung Shahnawaz", "Hannah Bathgate", "Grace Bathgate", 
+"Hamish Bathgate", "Susumu Okamoto", "Yuri Okamoto", "Holly Bathgate", "Charlotte Bathgate", 
+"Wittamon Chaowamas", "Danicashiying Ng", "Yuki Yamada", "Lauren Elizabeth Bailey", "Alice Rose Kay", 
+"Simon Marsden", "Joshua David Marsden", "Benjamin Edward Kay", "Lara Candice Marsden", "Michaela Bel Marsden", 
+"C Sukhareva", "Aleksandr Sukharev", "Harriet Matilda Kay", "Joel D Andreas", "Robson Aguiar", 
+"Taech Sinthavanuichit", "Yan Ni Li", "Sompo Supakijpaiboon", "Phoenix Wai Leng Lee", "Wenkuei Yeh", 
+"Khalid Mahmood", "Golam Rasul", "Hiroaki Yamamoto", "Suchada Sato", "Masayoshi Yoshida", 
+"Weijen Lin", "Hurrarah Abu", "Asaish Omer", "Anna Chen", "Ee Ping Geraldin Lee", 
+"Yujin Jung", "Preetesh Parakh", "Prit Sajjanrajbokdia", "Wiwat Koopinpaitoon", "Chontic Chitsanitkul", 
+"Jinhua Lai", "Junho Jung", "Muhammad Asif", "Muhammad Ahm Sabrani", "Jamsopon Tanthai", 
+"Ruturaj Vijay Kumbhar", "Yucheng Chu", "Aigul Abduldayeva", "Nurzhan Omarbekov", "Ming Yi Teng", 
+"Cheng Chung Yu", "Tzu Yun Yu", "Tzu Wei Yu", "Chin Chang Wu", "Fang Yu Liu", 
+"Tsai Lin Wu", "Huigo Yang", "Sabrin Fernandezsaid", "Phanida Loychanthuek", "Araya Wititkapat", 
+"Prabuddhda Dahal", "Simank Vatsa Dahal", "Prabina Dahal", "Sandhya Dahal", "Prisha Dahal", 
+"Krit Kaewvijit", "Wachirawit Kaewvijit", "Aditi Pant", "Ratna Chandradass", "Wachirawit Kaewvijit"];
+const domains = ["hotmail.com", "gmail.com", "yahoo.com"];
+
+function getRandom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function normalizeNameForEmail(name) {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, getRandom(['.', '_', '-']))
+    .replace(/[^a-z0-9._-]/g, '');
+}
+
+export default function FeedbackMocker() {
+  const [like, setLike] = useState("");
+  const [noImprove, setNoImprove] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [flight, setFlight] = useState("");
+
+  const generate = () => {
+    const pickedName = getRandom(names);
+    const pickedDomain = getRandom(domains);
+    const normalized = normalizeNameForEmail(pickedName);
+
+    setLike(getRandom(feedbackLikes));
+    setNoImprove(getRandom(feedbackNoImprove));
+    setName(pickedName);
+    setEmail(`${normalized}@${pickedDomain}`);
+    setFlight(getRandom(flightCodes));
+  };
+
+  return (
+    <div className="max-w-xl mx-auto p-6 space-y-4">
+      <h1 className="text-2xl font-bold text-center">Lounge Feedback Generator</h1>
+      <p className="text-center text-sm text-muted-foreground mb-4">
+        This tool generates sample feedback you can copy and paste into the real form.
+      </p>
+      <Button className="w-full" onClick={generate}>Generate Feedback</Button>
+
+      {like && (
+        <Card>
+          <CardContent className="p-4 space-y-2">
+            <p><strong>Flight Number:</strong> {flight}</p>
+            <p><strong>What you liked:</strong> {like}</p>
+            <p><strong>What to improve:</strong> {noImprove}</p>
+            <p><strong>Name:</strong> {name}</p>
+            <p><strong>Email:</strong> {email}</p>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
